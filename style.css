@@ -1,0 +1,210 @@
+:root {
+  --bg: #000000;
+  --card-bg: #1a1a22;
+  --border: #2e2e40;
+  --accent: #f76af2;
+  --accent-hover: #9b8dff;
+  --text: #e8e6f0;
+  --text-muted: #7a7890;
+  --error: #f06b6b;
+  --success: #5fcf8a;
+  --input-bg: #11111a;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ── Lock Screen ── */
+#lock-screen {
+  position: fixed;
+  inset: 0;
+  background: var(--bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  transition: opacity 0.5s ease, visibility 0.5s ease;
+}
+
+#lock-screen.hidden {
+  opacity: 0;
+  visibility: hidden;
+}
+
+.lock-card {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 48px 40px;
+  width: 100%;
+  max-width: 380px;
+  text-align: center;
+}
+
+.lock-icon {
+  font-size: 48px;
+  margin-bottom: 20px;
+  display: block;
+}
+
+.lock-card h1 {
+  font-size: 22px;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.lock-card p {
+  font-size: 14px;
+  color: var(--text-muted);
+  margin-bottom: 32px;
+}
+
+/* ── Input ── */
+.input-wrap {
+  position: relative;
+  margin-bottom: 16px;
+}
+
+#password-input {
+  width: 100%;
+  padding: 14px 48px 14px 16px;
+  background: var(--input-bg);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  color: var(--text);
+  font-size: 15px;
+  outline: none;
+  transition: border-color 0.2s;
+  letter-spacing: 3px;
+}
+
+#password-input:focus {
+  border-color: var(--accent);
+}
+
+#password-input.error {
+  border-color: var(--error);
+  animation: shake 0.4s ease;
+}
+
+#toggle-vis {
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 16px;
+  padding: 0;
+}
+
+#toggle-vis:hover {
+  color: var(--text);
+}
+
+/* ── Button ── */
+#unlock-btn {
+  width: 100%;
+  padding: 14px;
+  background: var(--accent);
+  border: none;
+  border-radius: 10px;
+  color: #fff;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.1s;
+}
+
+#unlock-btn:hover {
+  background: var(--accent-hover);
+}
+
+#unlock-btn:active {
+  transform: scale(0.98);
+}
+
+/* ── Messages ── */
+#error-msg {
+  font-size: 13px;
+  color: var(--error);
+  margin-top: 12px;
+  min-height: 18px;
+}
+
+#attempts-left {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-top: 8px;
+}
+
+/* ── Main Content ── */
+#main-content {
+  text-align: center;
+  padding: 2rem;
+}
+
+#main-content h2 {
+  font-size: 32px;
+  margin-bottom: 12px;
+}
+
+#main-content p {
+  color: var(--text-muted);
+  font-size: 16px;
+  margin-bottom: 24px;
+}
+
+.badge {
+  display: inline-block;
+  background: #1e2d1e;
+  color: var(--success);
+  border: 1px solid #2d4a2d;
+  border-radius: 20px;
+  padding: 6px 16px;
+  font-size: 13px;
+}
+
+/* ── Shake Animation ── */
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20%       { transform: translateX(-8px); }
+  40%       { transform: translateX(8px); }
+  60%       { transform: translateX(-6px); }
+  80%       { transform: translateX(6px); }
+}
+#go-btn {
+  display: inline-block;
+  margin-top: 24px;
+  padding: 12px 28px;
+  background: var(--accent);
+  color: #fff;
+  text-decoration: none;
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: 600;
+  transition: background 0.2s, transform 0.1s;
+}
+
+#go-btn:hover {
+  background: var(--accent-hover);
+}
+
+#go-btn:active {
+  transform: scale(0.98);
+}

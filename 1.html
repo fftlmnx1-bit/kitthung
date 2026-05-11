@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>หน้า 1</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    #page-wrap {
+      position: relative;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #000000;
+    }
+
+    #main-content {
+      position: relative;
+      z-index: 1;
+      text-align: center;
+      padding: 3rem 2rem;
+      max-width: 700px;
+      opacity: 0;
+      transition: opacity 1.2s ease;
+    }
+
+    #main-content h2 {
+      font-size: 42px;
+      font-weight: 700;
+      margin-bottom: 16px;
+      color: #fff;
+    }
+
+    #main-content p {
+      font-size: 18px;
+      color: rgba(255,255,255,0.65);
+      line-height: 1.8;
+      margin-bottom: 12px;
+    }
+
+    #main-content .subtitle {
+      font-size: 14px;
+      color: rgba(255,255,255,0.35);
+      margin-bottom: 32px;
+    }
+
+    #go-btn {
+      display: inline-block;
+      margin-top: 24px;
+      padding: 12px 28px;
+      background: #f76af0;
+      color: #fff;
+      text-decoration: none;
+      border-radius: 10px;
+      font-size: 15px;
+      font-weight: 600;
+      transition: background 0.2s, transform 0.1s;
+    }
+
+    #go-btn:hover  { background: #9b8dff; }
+    #go-btn:active { transform: scale(0.98); }
+
+    #flowerCanvas {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      pointer-events: none;
+      z-index: 100;
+    }
+  </style>
+</head>
+<body>
+
+  <div id="page-wrap">
+    <div id="main-content">
+      <h2>สวัสดีนะแฟน🌸</h2>
+      <p>นี่คือสถานีของเค้าเองพร้อมจะไปด้วยกันแล้วยังครับ</p>
+      <p class="subtitle"></p>
+      <a href="2.html" id="go-btn">พร้อมแล้วไปกันเลย →</a>
+    </div>
+  </div>
+
+  <canvas id="flowerCanvas"></canvas>
+
+  <!-- Slide overlay -->
+  <div id="slide-out" style="
+    position:fixed; inset:0; background:#000000;
+    transform:translateX(-100%); z-index:9999;
+    pointer-events:none;
+    transition:transform 0.75s cubic-bezier(0.77,0,0.18,1);
+  "></div>
+
+  <script>
+    if (sessionStorage.getItem('isAuthenticated') !== 'true') {
+      window.location.href = 'index.html';
+    }
+
+    function goToPage2(e) {
+      e.preventDefault();
+      const el = document.getElementById('slide-out');
+      el.style.pointerEvents = 'all';
+      el.style.transform = 'translateX(0%)';
+      setTimeout(() => { window.location.href = '2.html'; }, 780);
+    }
+
+    const canvas  = document.getElementById('flowerCanvas');
+    const ctx     = canvas.getContext('2d');
+    const content = document.getElementById('main-content');
+
+    function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+    resize();
+    window.addEventListener('resize', resize);
+
+    function rand(a, b) { return Math.random() * (b - a) + a; }
+
+    const PALETTES = [
+      ['#fda4af','#fb7185','#be123c'],
+      ['#f9a8d4','#f472b6','#9d174d'],
+      ['#c4b5fd','#a78bfa','#6d28d9'],
+      ['#fde68a','#fbbf24','#b45309'],
+      ['#6ee7b7','#34d399','#065f46'],
+      ['#93c5fd','#60a5fa','#1d4ed8'],
+      ['#fdba74','#fb923c','#c2410c'],
+      ['#f0abfc','#e879f9','#7e22ce'],
+      ['#fecdd3','#fda4af','#9f1239'],
+      ['#bbf7d0','#86efac','#166534'],
+      ['#e0f2fe','#7dd3fc','#0369a1'],
+      ['#fef9c3','#fde047','#a16207'],
+    ];
+
+    function rose(ctx, size, c) {
+      for (let l = 4; l >= 0; l--) {
+        const pc = 5 + l, r = size * (0.28 + l * 0.17);
+        for (let p = 0; p < pc; p++) {
+          const a = (2 * Math.PI / pc) * p + l * 0.35;
+          ctx.save(); ctx.rotate(a);
+          ctx.fillStyle = c[Math.min(l, c.length - 1)];
+          ctx.beginPath(); ctx.moveTo(0, 0);
+          ctx.bezierCurveTo(r*0.4,-r*0.3, r*0.6,-r*0.9, 0,-r);
+          ctx.bezierCurveTo(-r*0.6,-r*0.9, -r*0.4,-r*0.3, 0, 0);
+          ctx.fill(); ctx.restore();
+        }
+      }
+      ctx.fillStyle = '#fff4';
+      ctx.beginPath(); ctx.arc(0, 0, size*0.11, 0, 2*Math.PI); ctx.fill();
+    }
+
+    function sakura(ctx, size, c) {
+      for (let p = 0; p < 5; p++) {
+        ctx.save(); ctx.rotate((2*Math.PI/5)*p);
+        ctx.fillStyle = c[0]; ctx.beginPath(); ctx.moveTo(0, 0);
+        ctx.bezierCurveTo(size*0.32,-size*0.18, size*0.48,-size*0.68, 0,-size*0.92);
+        ctx.bezierCurveTo(-size*0.48,-size*0.68, -size*0.32,-size*0.18, 0, 0);
+        ctx.fill();
+        ctx.fillStyle = c[1]||c[0]; ctx.globalAlpha *= 0.45; ctx.beginPath();
+        ctx.moveTo(0,-size*0.38);
+        ctx.bezierCurveTo(size*0.12,-size*0.58, size*0.09,-size*0.82, 0,-size*0.92);
+        ctx.bezierCurveTo(-size*0.09,-size*0.82, -size*0.12,-size*0.58, 0,-size*0.38);
+        ctx.fill(); ctx.restore();
+      }
+      ctx.fillStyle = '#fde68a';
+      ctx.beginPath(); ctx.arc(0, 0, size*0.17, 0, 2*Math.PI); ctx.fill();
+    }
+
+    function lily(ctx, size, c) {
+      for (let p = 0; p < 6; p++) {
+        ctx.save(); ctx.rotate((2*Math.PI/6)*p);
+        ctx.fillStyle = c[p % c.length]; ctx.beginPath(); ctx.moveTo(0, 0);
+        ctx.bezierCurveTo(size*0.33,-size*0.1, size*0.38,-size*0.68, 0,-size*0.96);
+        ctx.bezierCurveTo(-size*0.38,-size*0.68, -size*0.33,-size*0.1, 0, 0);
+        ctx.fill(); ctx.restore();
+      }
+      ctx.fillStyle = '#fbbf24';
+      ctx.beginPath(); ctx.arc(0, 0, size*0.15, 0, 2*Math.PI); ctx.fill();
+    }
+
+    function daisy(ctx, size, c) {
+      for (let p = 0; p < 22; p++) {
+        ctx.save(); ctx.rotate((2*Math.PI/22)*p);
+        ctx.fillStyle = c[0]; ctx.beginPath();
+        ctx.ellipse(0,-size*0.58, size*0.1, size*0.42, 0, 0, 2*Math.PI);
+        ctx.fill(); ctx.restore();
+      }
+      ctx.fillStyle = '#fde68a'; ctx.beginPath(); ctx.arc(0,0,size*0.21,0,2*Math.PI); ctx.fill();
+      ctx.fillStyle = '#f59e0b'; ctx.beginPath(); ctx.arc(0,0,size*0.13,0,2*Math.PI); ctx.fill();
+    }
+
+    function sunflower(ctx, size, c) {
+      for (let p = 0; p < 16; p++) {
+        ctx.save(); ctx.rotate((2*Math.PI/16)*p);
+        ctx.fillStyle = c[0]; ctx.beginPath(); ctx.moveTo(0, 0);
+        ctx.bezierCurveTo(size*0.18,-size*0.28, size*0.14,-size*0.88, 0,-size*0.98);
+        ctx.bezierCurveTo(-size*0.14,-size*0.88, -size*0.18,-size*0.28, 0, 0);
+        ctx.fill(); ctx.restore();
+      }
+      ctx.fillStyle = '#7c3f00';
+      ctx.beginPath(); ctx.arc(0, 0, size*0.3, 0, 2*Math.PI); ctx.fill();
+    }
+
+    function peony(ctx, size, c) {
+      for (let l = 5; l >= 0; l--) {
+        const pc = 7 + l, r = size * (0.22 + l * 0.14);
+        for (let p = 0; p < pc; p++) {
+          const a = (2*Math.PI/pc)*p + l*0.2;
+          ctx.save(); ctx.rotate(a);
+          ctx.fillStyle = c[Math.min(l, c.length-1)]; ctx.beginPath(); ctx.moveTo(0, 0);
+          ctx.bezierCurveTo(r*0.5,-r*0.2, r*0.55,-r*0.8, 0,-r);
+          ctx.bezierCurveTo(-r*0.55,-r*0.8, -r*0.5,-r*0.2, 0, 0);
+          ctx.fill(); ctx.restore();
+        }
+      }
+      ctx.fillStyle = '#fff5';
+      ctx.beginPath(); ctx.arc(0, 0, size*0.1, 0, 2*Math.PI); ctx.fill();
+    }
+
+    const TYPES   = [rose, sakura, lily, daisy, sunflower, peony];
+    const flowers = [];
+    let animId       = null;
+    let globalFade   = 1;
+    let fadingOut    = false;
+    let fadeOutStart = 0;
+
+    function getGridPositions(W, H, cols, rows) {
+      const pos = [];
+      const cw = W / cols, ch = H / rows;
+      for (let r = 0; r < rows; r++)
+        for (let c = 0; c < cols; c++)
+          pos.push({ x: c*cw + rand(cw*0.05,cw*0.95), y: r*ch + rand(ch*0.05,ch*0.95) });
+      for (let i = pos.length-1; i > 0; i--) {
+        const j = Math.floor(Math.random()*(i+1));
+        [pos[i], pos[j]] = [pos[j], pos[i]];
+      }
+      return pos;
+    }
+
+    function spawnAt(tx, ty, delay, layer) {
+      const W = canvas.width, H = canvas.height;
+      const palette = PALETTES[Math.floor(Math.random() * PALETTES.length)];
+      const type    = TYPES[Math.floor(Math.random() * TYPES.length)];
+      const size    = rand(36, 88);
+      const edges   = [
+        {x:tx,y:-size}, {x:W+size,y:ty},
+        {x:tx,y:H+size}, {x:-size,y:ty}
+      ];
+      const from   = edges[Math.floor(Math.random() * edges.length)];
+      const dist   = Math.sqrt((tx-from.x)**2 + (ty-from.y)**2);
+      const frames = Math.max(30, dist / rand(2.5, 4.5));
+      setTimeout(() => {
+        flowers.push({
+          cx:from.x, cy:from.y, tx, ty,
+          vx:(tx-from.x)/frames, vy:(ty-from.y)/frames,
+          size, palette, drawFn:type,
+          rot:rand(0,360), spin:rand(-0.6,0.6),
+          life:0, arriveFrame:Math.floor(frames),
+          arrived:false, opacity:0, layer
+        });
+      }, delay);
+    }
+
+    function startAnimation() {
+      flowers.length = 0;
+      globalFade = 1; fadingOut = false;
+      content.style.opacity = '0';
+
+      const W = canvas.width, H = canvas.height;
+
+      getGridPositions(W,H, 11, 8).forEach((p,i) => spawnAt(p.x,p.y, i*40,     0));
+      getGridPositions(W,H,  9, 7).forEach((p,i) => spawnAt(p.x,p.y, 600+i*38,  1));
+      getGridPositions(W,H, 13,10).forEach((p,i) => spawnAt(p.x,p.y, 1400+i*30, 2));
+      getGridPositions(W,H, 15,11).forEach((p,i) => spawnAt(p.x,p.y, 2200+i*22, 3));
+
+      setTimeout(() => { content.style.opacity = '1'; }, 4500);
+      setTimeout(() => { fadingOut = true; fadeOutStart = performance.now(); }, 6500);
+
+      if (animId) cancelAnimationFrame(animId);
+      loop();
+    }
+
+    function loop() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      if (fadingOut) globalFade = Math.max(0, 1-(performance.now()-fadeOutStart)/3500);
+
+      flowers.sort((a,b) => a.layer - b.layer);
+      for (let i = flowers.length-1; i >= 0; i--) {
+        const f = flowers[i];
+        if (!f.arrived) {
+          f.cx += f.vx; f.cy += f.vy; f.life++;
+          f.opacity = Math.min(1, f.life/15);
+          if (f.life >= f.arriveFrame) { f.arrived = true; f.cx = f.tx; f.cy = f.ty; }
+        } else { f.rot += f.spin; }
+        if (globalFade <= 0) continue;
+        ctx.save();
+        ctx.globalAlpha = f.opacity * globalFade;
+        ctx.translate(f.cx, f.cy);
+        ctx.rotate(f.rot * Math.PI/180);
+        f.drawFn(ctx, f.size, f.palette);
+        ctx.restore();
+      }
+      animId = requestAnimationFrame(loop);
+    }
+
+    startAnimation();
+  </script>
+
+</body>
+</html>
